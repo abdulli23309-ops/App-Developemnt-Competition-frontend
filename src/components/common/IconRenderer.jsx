@@ -36,3 +36,5 @@ export default function IconRenderer({
   // Fallback for safety - never attempt to render an unknown object as a component tag
   return null;
 }
+
+export { IconRenderer };
