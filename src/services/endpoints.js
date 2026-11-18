@@ -10,6 +10,7 @@
 export const ENDPOINTS = {
   // Health / status
   health: '/health',
+  databaseStatus: '/database/status',
 
   // Placeholder: add domain-specific endpoints here after the competition
   // problem statement is revealed.

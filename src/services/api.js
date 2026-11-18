@@ -17,4 +17,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Centralized response error handling. Logs the error and re-throws so
+// callers can still catch and present UI-specific messages. Never leaks
+// connection strings, credentials, or internal server details.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // The server responded with a status code outside the 2xx range.
+      console.error(
+        `API error ${error.response.status} ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+      );
+    } else if (error.request) {
+      // The request was made but no response was received (network error).
+      console.error(
+        `API network error ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+      );
+    } else {
+      // Something happened in setting up the request.
+      console.error('API request setup error:', error.message);
+    }
+    return Promise.reject(error);
+  },
+);
+
 export default api;
+
