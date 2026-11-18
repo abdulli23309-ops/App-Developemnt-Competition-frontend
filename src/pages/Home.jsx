@@ -69,19 +69,19 @@ export default function Home() {
           <div className="status-grid">
             <StatusCard
               name="Frontend"
-              icon={<Monitor />}
+              icon={Monitor}
               status={frontendStatus}
               label={statusLabel(frontendStatus)}
             />
             <StatusCard
               name="Backend API"
-              icon={<Wifi />}
+              icon={Wifi}
               status={backendStatus}
               label={statusLabel(backendStatus)}
             />
             <StatusCard
               name="Database"
-              icon={<Database />}
+              icon={Database}
               status={databaseStatus}
               label={statusLabel(databaseStatus)}
             />
@@ -139,4 +139,3 @@ function StatusIndicator({ status, label }) {
     </span>
   );
 }
-
