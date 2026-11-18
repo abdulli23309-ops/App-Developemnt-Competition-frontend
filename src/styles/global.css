@@ -603,7 +603,8 @@ textarea {
   color: var(--color-danger);
 }
 
-.status-badge-loading {
+.status-badge-loading,
+.status-badge-idle {
   background: var(--color-secondary-light);
   color: var(--color-secondary);
 }
@@ -621,8 +622,41 @@ textarea {
   border-left: 3px solid var(--color-danger);
 }
 
-.status-card-loading {
+.status-card-loading,
+.status-card-idle {
   border-left: 3px solid var(--color-secondary);
+}
+
+.error-boundary-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--spacing-lg);
+}
+
+.error-boundary-card {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.error-boundary-card h2 {
+  color: var(--color-danger);
+  margin-bottom: var(--spacing-sm);
+}
+
+.error-message {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  font-family: monospace;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  overflow-x: auto;
+  margin: var(--spacing-md) 0;
+  text-align: left;
 }
 
 .dashboard-footer {

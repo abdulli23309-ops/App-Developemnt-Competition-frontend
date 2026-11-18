@@ -7,8 +7,8 @@ import { ENDPOINTS } from '../services/endpoints';
  *
  * Checks:
  *  - Frontend: always "success" when the hook is mounted (page is running)
- *  - Backend API: GET /api/health
- *  - Database: GET /api/database/status
+ *  - Backend API: GET /api/health (verifies HTTP 200 + success: true)
+ *  - Database: GET /api/database/status (verifies HTTP 200 + success: true)
  *
  * Returns an object with status objects for each system, a last-checked
  * timestamp, a checking flag, and a checkConnectivity() retry function.
@@ -24,23 +24,32 @@ export default function useConnectivityStatus() {
 
   const checkConnectivity = useCallback(async () => {
     setIsChecking(true);
+    setFrontendStatus('success');
+    setBackendStatus('loading');
+    setDatabaseStatus('loading');
+
     const now = new Date().toISOString();
 
-    // Frontend: the page is running, so it is always available.
-    setFrontendStatus('success');
-
-    // Backend API: actual HTTP request to /api/health.
+    // Backend API check
     try {
-      await api.get(ENDPOINTS.health);
-      setBackendStatus('success');
+      const response = await api.get(ENDPOINTS.health);
+      if (response && response.data && response.data.success === true) {
+        setBackendStatus('success');
+      } else {
+        setBackendStatus('failure');
+      }
     } catch {
       setBackendStatus('failure');
     }
 
-    // Database: actual HTTP request to /api/database/status.
+    // Database check
     try {
-      await api.get(ENDPOINTS.databaseStatus);
-      setDatabaseStatus('success');
+      const response = await api.get(ENDPOINTS.databaseStatus);
+      if (response && response.data && response.data.success === true) {
+        setDatabaseStatus('success');
+      } else {
+        setDatabaseStatus('failure');
+      }
     } catch {
       setDatabaseStatus('failure');
     }
@@ -50,10 +59,16 @@ export default function useConnectivityStatus() {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const init = async () => {
-      await checkConnectivity();
+      if (isMounted) {
+        await checkConnectivity();
+      }
     };
     init();
+    return () => {
+      isMounted = false;
+    };
   }, [checkConnectivity]);
 
   return {

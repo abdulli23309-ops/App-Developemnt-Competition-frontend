@@ -10,6 +10,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import useConnectivityStatus from '../hooks/useConnectivityStatus';
+import IconRenderer from '../components/common/IconRenderer';
 
 export default function Home() {
   useEffect(() => {
@@ -33,6 +34,8 @@ export default function Home() {
         return 'Unavailable';
       case 'loading':
         return 'Checking...';
+      case 'idle':
+        return 'Pending';
       default:
         return 'Unknown';
     }
@@ -43,19 +46,25 @@ export default function Home() {
       <div className="card">
         <div className="dashboard-header">
           <div className="dashboard-brand">
-            <Monitor size={28} />
+            <IconRenderer icon={Monitor} size={28} />
             <div>
               <h1>APP DEVELOPMENT COMPETITION</h1>
               <p>Your competition starts here.</p>
             </div>
           </div>
           <button
+            type="button"
             className="btn btn-outline"
             onClick={checkConnectivity}
             disabled={isChecking}
+            aria-label="Retry connectivity check"
           >
-            {isChecking ? <Loader2 size={16} className="spin" /> : <RefreshCw size={16} />}
-            Retry Check
+            <IconRenderer
+              icon={isChecking ? Loader2 : RefreshCw}
+              size={16}
+              className={isChecking ? 'spin' : ''}
+            />
+            {isChecking ? 'Checking...' : 'Retry Check'}
           </button>
         </div>
 
@@ -93,8 +102,12 @@ export default function Home() {
             This is a temporary starter dashboard. Replace with the actual
             competition application once the problem statement is announced.
           </p>
-          <Link to="/" className="btn btn-primary">
-            Return to Home
+          <Link
+            to="/"
+            className="btn btn-primary"
+            onClick={checkConnectivity}
+          >
+            Refresh Status
           </Link>
         </div>
       </div>
@@ -102,40 +115,52 @@ export default function Home() {
   );
 }
 
-function StatusCard({ name, icon: Icon, status, label }) {
+function StatusCard({ name, icon, status, label }) {
+  const safeStatus = status || 'idle';
+  const safeLabel = typeof label === 'string' ? label : 'Unknown';
+
   return (
-    <div className={`status-card status-card-${status}`}>
+    <div className={`status-card status-card-${safeStatus}`}>
       <div className="status-card-header">
         <div className="status-card-icon">
-          <Icon size={20} />
+          <IconRenderer icon={icon} size={20} />
         </div>
         <span className="status-card-name">{name}</span>
       </div>
       <div className="status-card-body">
-        <StatusIndicator status={status} label={label} />
-        <span className="status-card-label">{label}</span>
+        <StatusIndicator status={safeStatus} label={safeLabel} />
+        <span className="status-card-label">{safeLabel}</span>
       </div>
     </div>
   );
 }
 
 function StatusIndicator({ status, label }) {
-  const Icon =
-    status === 'success'
-      ? CheckCircle
-      : status === 'failure'
-        ? XCircle
-        : Loader2;
+  const getIcon = () => {
+    switch (status) {
+      case 'success':
+        return CheckCircle;
+      case 'failure':
+        return XCircle;
+      case 'loading':
+      case 'idle':
+      default:
+        return Loader2;
+    }
+  };
+
+  const isSpinning = status === 'loading';
+
   return (
     <span
       className={`status-badge status-badge-${status}`}
       aria-label={label}
     >
-      {status === 'loading' ? (
-        <Icon size={14} className="spin" />
-      ) : (
-        <Icon size={14} />
-      )}
+      <IconRenderer
+        icon={getIcon()}
+        size={14}
+        className={isSpinning ? 'spin' : ''}
+      />
     </span>
   );
 }

@@ -2,6 +2,12 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+if (!API_BASE_URL && typeof window !== 'undefined') {
+  console.info(
+    'VITE_API_BASE_URL is not set. API requests will be dispatched relative to current host.',
+  );
+}
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
@@ -42,4 +48,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

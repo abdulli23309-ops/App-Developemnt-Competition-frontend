@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Outlet, Link, NavLink } from 'react-router-dom';
-import { Home, Menu, X } from 'lucide-react';
+import { Home as HomeIcon, Menu, X } from 'lucide-react';
+import IconRenderer from '../common/IconRenderer';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Home', icon: Home },
+  { to: '/', label: 'Home', icon: HomeIcon },
 ];
 
 export default function Layout() {
@@ -21,7 +22,7 @@ export default function Layout() {
           aria-label="Go to homepage"
           onClick={closeMenu}
         >
-          <Home size={20} />
+          <IconRenderer icon={HomeIcon} size={20} />
           <span>Competition Starter</span>
         </Link>
 
@@ -31,29 +32,26 @@ export default function Layout() {
           aria-expanded={mobileMenuOpen}
           onClick={toggleMenu}
         >
-          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          <IconRenderer icon={mobileMenuOpen ? X : Menu} size={20} />
         </button>
 
         <div
           className={`navbar-nav ${mobileMenuOpen ? 'open' : ''}`}
           role="navigation"
         >
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive: active }) =>
-                  `nav-link${active ? ' active' : ''}`}
-                onClick={closeMenu}
-              >
-                <Icon size={18} />
-                {item.label}
-              </NavLink>
-            );
-          })}
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive: active }) =>
+                `nav-link${active ? ' active' : ''}`}
+              onClick={closeMenu}
+            >
+              <IconRenderer icon={item.icon} size={18} />
+              {item.label}
+            </NavLink>
+          ))}
         </div>
       </nav>
 

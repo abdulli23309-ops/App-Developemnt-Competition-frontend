@@ -7,7 +7,7 @@ import api from '../services/api';
  * Returns:
  *  - data: response data (null until success)
  *  - loading: boolean, true while the request is in flight
- *  - error: string | null, a user-facing error message
+ *  - error: string | null, a user-facing error message (guaranteed string)
  *  - execute: async function to call the API (pass an axios request config)
  *  - reset: clear data and error
  */
@@ -28,9 +28,11 @@ export default function useApi() {
         return response.data;
       } catch (err) {
         let message = 'An unexpected error occurred.';
-        if (err.response && err.response.data && err.response.data.message) {
+        if (err.response?.data?.message && typeof err.response.data.message === 'string') {
           message = err.response.data.message;
-        } else if (err.message) {
+        } else if (typeof err.response?.data === 'string' && err.response.data) {
+          message = err.response.data;
+        } else if (err.message && typeof err.message === 'string') {
           message = err.message;
         }
         setError(message);
