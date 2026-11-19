@@ -1,10 +1,10 @@
-import AppRoutes from './routes/AppRoutes';
-import ErrorBoundary from './components/common/ErrorBoundary';
+import AppProviders from './app/providers';
+import AppRoutes from './app/routes';
 
 export default function App() {
   return (
-    <ErrorBoundary>
+    <AppProviders>
       <AppRoutes />
-    </ErrorBoundary>
+    </AppProviders>
   );
 }

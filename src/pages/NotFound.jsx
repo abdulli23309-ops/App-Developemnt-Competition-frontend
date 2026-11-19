@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Compass, AlertCircle } from 'lucide-react';
-import IconRenderer from '../components/common/IconRenderer';
+import IconRenderer from '../components/ui/IconRenderer';
 
 export default function NotFound() {
   useEffect(() => {

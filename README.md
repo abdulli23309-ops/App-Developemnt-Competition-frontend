@@ -1,41 +1,45 @@
-# Competition Frontend (React + Vite)
+# CampusConnect Frontend (React 19 + Vite)
 
-Production-ready React + Vite frontend foundation for an application development competition.
+Production-ready React + Vite frontend foundation for CampusConnect.
 
 ## Architecture
 
 - **Framework:** React 19 + Vite (JavaScript/JSX)
-- **Routing:** React Router DOM (BrowserRouter)
-- **HTTP Client:** Axios (centralized instance in `src/services/api.js`)
-- **Icons:** Lucide React
-- **Styling:** CSS (CSS variables in `src/styles/global.css`)
-- **State:** Local React state only (no Redux or external state libraries)
+- **Routing:** React Router DOM v7 (BrowserRouter)
+- **HTTP Client:** Axios (centralized instance in `src/lib/api/client.js`)
+- **Icons:** Lucide React (via resilient `IconRenderer`)
+- **Styling:** Modular CSS variables in `src/styles/global.css`
+- **State:** Local React state & hooks
 - **Deployment:** Vercel (SPA static hosting)
 
 ## Project Structure
 
 ```
 frontend/
-├── public/
+├── public/                # Static public assets (favicon.svg, icons.svg)
 ├── src/
-│   ├── assets/            # Static assets
+│   ├── app/               # Application setup, routes, providers
+│   ├── assets/            # Static image assets (hero.png)
 │   ├── components/
-│   │   ├── common/        # Shared UI components
-│   │   └── layout/        # Layout components (Navbar, etc.)
-│   ├── hooks/             # Reusable React hooks (useApi)
-│   ├── pages/             # Page components (Home, NotFound)
-│   ├── routes/            # Route configuration
-│   ├── services/          # API service layer (api.js, endpoints.js)
-│   ├── styles/            # Global CSS with design tokens
-│   ├── utils/             # Utility functions
+│   │   ├── ui/            # Reusable UI (Button, Badge, Card, Modal, Toast, Skeleton, EmptyState, IconRenderer, ErrorBoundary)
+│   │   ├── layout/        # Layout components (Layout navbar, sidebar)
+│   │   └── common/        # Backward-compatible re-exports
+│   ├── features/          # Domain features (auth, complaints, admin, analytics, notifications)
+│   ├── hooks/             # Custom React hooks (useApi, useConnectivityStatus)
+│   ├── lib/
+│   │   ├── api/           # Axios instance, interceptors, endpoints
+│   │   └── utils/         # Formatting and utility functions
+│   ├── pages/             # Page components (Home status dashboard, NotFound)
+│   ├── styles/            # Global styles and design tokens
+│   ├── types/             # Domain JSDoc typedefs
 │   ├── App.jsx            # Root component
 │   └── main.jsx           # Entry point
-├── .env.example           # Environment variable template
+├── .env.example           # Environment template
 ├── .gitignore
 ├── index.html
 ├── package.json
 ├── vercel.json            # Vercel SPA routing configuration
-└── vite.config.js
+└── vite.config.js         # Vite config with '@' path alias
 ```
 
 ## Prerequisites
