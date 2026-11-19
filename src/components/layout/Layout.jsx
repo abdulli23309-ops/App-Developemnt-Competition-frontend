@@ -17,8 +17,8 @@ export default function Layout() {
 
       {/* Main Container */}
       <div className="cc-main-container">
-        {/* Top Header wrapped in navbar class for starter test compatibility */}
-        <div className="navbar" style={{ padding: 0, margin: 0, border: 'none', height: 'auto', background: 'transparent' }}>
+        {/* Top Header wrapped in navbar class for starter test compatibility (mobile only) */}
+        <div className="navbar cc-top-header-wrapper" style={{ padding: 0, margin: 0, border: 'none', height: 'auto', background: 'transparent' }}>
           <Header onToggleMobileNav={() => setIsMobileNavOpen((prev) => !prev)} />
           <span style={{ display: 'none' }}>CampusConnect &bull; Competition Starter</span>
         </div>

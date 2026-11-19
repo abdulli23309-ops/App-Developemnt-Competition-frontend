@@ -27,15 +27,15 @@ async function runCampusConnectTests() {
   assert(studentLoginRes.data.success === true, 'Student login succeeds');
   const studentToken = studentLoginRes.data.data.token;
   const studentUser = studentLoginRes.data.data.user;
-  assert(studentUser.name === 'Sarah Chen', 'Student name is Sarah Chen');
-  assert(studentUser.regNo === 'BIIT-2023-SE-042', 'Student RegNo is BIIT-2023-SE-042');
+  assert(studentUser.fullName === 'Sarah Chen' || studentUser.name === 'Sarah Chen', 'Student name is Sarah Chen');
+  assert(studentUser.registrationNumber === 'BIIT-2023-SE-042' || studentUser.regNo === 'BIIT-2023-SE-042', 'Student RegNo is BIIT-2023-SE-042');
   assert(studentUser.role === 'Student', 'Student role is Student');
 
   // 3. Auth Me
   const meRes = await axios.get(`${API_BASE}/auth/me`, {
     headers: { Authorization: `Bearer ${studentToken}` }
   });
-  assert(meRes.data.success === true && meRes.data.data.name === 'Sarah Chen', 'GET /api/auth/me returns valid user');
+  assert(meRes.data.success === true && (meRes.data.data.fullName === 'Sarah Chen' || meRes.data.data.name === 'Sarah Chen'), 'GET /api/auth/me returns valid user');
 
   // 4. Student Complaints List
   const complaintsRes = await axios.get(`${API_BASE}/complaints`, {

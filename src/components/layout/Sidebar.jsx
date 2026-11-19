@@ -54,11 +54,11 @@ export default function Sidebar({ isOpen, onClose }) {
     };
   }, [user]);
 
-  const getDepartmentBadgeLabel = () => {
+  const getUserSubtitle = () => {
     if (!user) return 'System Portal';
-    if (isSuperAdmin) return 'All Campus Faculties';
-    if (isDeptAdmin) return user.departmentName || 'Department';
-    return user.departmentName || 'Student Body';
+    if (isSuperAdmin) return 'Super Admin';
+    if (isDeptAdmin) return user.departmentName || 'Department Admin';
+    return user.registrationNumber || 'Student';
   };
 
   return (
@@ -162,8 +162,8 @@ export default function Sidebar({ isOpen, onClose }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
               <div
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '50%',
                   background: 'linear-gradient(135deg, #4338CA 0%, #6366F1 100%)',
                   display: 'flex',
@@ -173,20 +173,22 @@ export default function Sidebar({ isOpen, onClose }) {
                   fontWeight: 700,
                   fontSize: '0.9rem',
                   flexShrink: 0,
+                  boxShadow: '0 2px 6px rgba(67, 56, 202, 0.25)',
                 }}
               >
                 {user.fullName?.charAt(0).toUpperCase() || (user.email?.charAt(0).toUpperCase())}
               </div>
-              <div style={{ overflow: 'hidden' }}>
+              <div style={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
                 <div
                   style={{
                     fontWeight: 700,
-                    fontSize: '0.85rem',
+                    fontSize: '0.875rem',
                     color: '#1E293B',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                   }}
+                  title={user.fullName || user.email}
                 >
                   {user.fullName || user.email}
                 </div>
@@ -194,6 +196,7 @@ export default function Sidebar({ isOpen, onClose }) {
                   style={{
                     fontSize: '0.72rem',
                     color: '#64748B',
+                    fontWeight: 600,
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px',
@@ -201,11 +204,12 @@ export default function Sidebar({ isOpen, onClose }) {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                   }}
+                  title={getUserSubtitle()}
                 >
                   {isStudent && <GraduationCap size={12} color="#4F46E5" />}
                   {isDeptAdmin && <Building2 size={12} color="#059669" />}
                   {isSuperAdmin && <Sparkles size={12} color="#D97706" />}
-                  <span>{getDepartmentBadgeLabel()}</span>
+                  <span>{getUserSubtitle()}</span>
                 </div>
               </div>
             </div>
@@ -415,6 +419,7 @@ export default function Sidebar({ isOpen, onClose }) {
           {user && (
             <button
               type="button"
+              className="cc-sidebar-logout-btn"
               onClick={() => {
                 onClose?.();
                 logout();
@@ -422,20 +427,21 @@ export default function Sidebar({ isOpen, onClose }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.75rem',
+                justifyContent: 'center',
+                gap: '0.625rem',
                 width: '100%',
                 padding: '0.625rem 0.875rem',
                 borderRadius: '10px',
-                fontSize: '0.875rem',
+                fontSize: '0.85rem',
                 fontWeight: 600,
                 color: '#DC2626',
                 backgroundColor: '#FEF2F2',
-                border: 'none',
+                border: '1px solid #FECDD3',
                 cursor: 'pointer',
-                textAlign: 'left',
+                transition: 'all 0.15s ease',
               }}
             >
-              <LogOut size={18} />
+              <LogOut size={16} />
               <span>Sign Out</span>
             </button>
           )}

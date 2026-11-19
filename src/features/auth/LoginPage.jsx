@@ -9,10 +9,6 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  GraduationCap,
-  UtensilsCrossed,
-  BookOpen,
-  Laptop,
   CheckCircle2,
   AlertCircle,
   HelpCircle
@@ -23,72 +19,12 @@ export default function LoginPage() {
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('s.chen@student.biit.edu.pk');
-  const [password, setPassword] = useState('Password123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  const showDemoAccounts = import.meta.env.VITE_SHOW_DEMO_ACCOUNTS !== 'false';
-
-  // Demo account credentials
-  const demoAccounts = [
-    {
-      roleName: 'Student',
-      displayName: 'Sarah Chen',
-      subtitle: "SE Batch '23",
-      email: 's.chen@student.biit.edu.pk',
-      icon: GraduationCap,
-      color: '#4338CA',
-      tagColor: '#EEF2FF'
-    },
-    {
-      roleName: 'IT & Labs',
-      displayName: 'Engr. Farhan',
-      subtitle: 'Hardware & Net Admin',
-      email: 'itlabs.admin@biit.edu.pk',
-      icon: Laptop,
-      color: '#059669',
-      tagColor: '#ECFDF5'
-    },
-    {
-      roleName: 'Cafeteria',
-      displayName: 'Warden Asif',
-      subtitle: 'Hygiene & Food Board',
-      email: 'cafeteria.admin@biit.edu.pk',
-      icon: UtensilsCrossed,
-      color: '#D97706',
-      tagColor: '#FEF3C7'
-    },
-    {
-      roleName: 'Library',
-      displayName: 'Bushra R.',
-      subtitle: 'Resource Center',
-      email: 'library.admin@biit.edu.pk',
-      icon: BookOpen,
-      color: '#7C3AED',
-      tagColor: '#F5F3FF'
-    },
-    {
-      roleName: 'Teaching & Academic',
-      displayName: 'Dr. Arshad',
-      subtitle: 'Faculty & Curriculum Liaison',
-      email: 'academics.admin@biit.edu.pk',
-      icon: Building2,
-      color: '#2563EB',
-      tagColor: '#EFF6FF'
-    },
-    {
-      roleName: 'Super Admin • Executive',
-      displayName: 'Dean of Academics / Registrar Office',
-      subtitle: 'Full Institutional Oversight & Escalation Authority',
-      email: 'superadmin@biit.edu.pk',
-      icon: ShieldCheck,
-      color: '#1E1B4B',
-      tagColor: '#E0E7FF'
-    }
-  ];
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -100,12 +36,6 @@ export default function LoginPage() {
       }
     }
   }, [isAuthenticated, user, navigate]);
-
-  const handleSelectDemo = (account) => {
-    setEmail(account.email);
-    setPassword('Password123!');
-    setError('');
-  };
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -141,7 +71,7 @@ export default function LoginPage() {
               <div className="brand-logo-icon">
                 <ShieldCheck size={26} strokeWidth={2.5} />
               </div>
-              <div>
+              <div className="brand-title-column">
                 <span className="brand-app-title">CampusConnect</span>
                 <span className="brand-sub-badge">INSTITUTIONAL DISPUTE SYSTEM</span>
               </div>
@@ -209,7 +139,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* RIGHT PANEL - LOGIN & DEMO ACCESS */}
+        {/* RIGHT PANEL - LOGIN */}
         <div className="login-form-panel">
           <div className="form-header-badge">
             <span className="portal-badge">
@@ -219,40 +149,8 @@ export default function LoginPage() {
 
           <h2 className="login-title">Sign in to CampusConnect</h2>
           <p className="login-subtitle">
-            Enter your official university credentials or select instant Competition Demo Access below.
+            Enter your official university credentials below to access the institutional grievance system.
           </p>
-
-          {/* INSTANT DEMO ACCESS SECTION */}
-          {showDemoAccounts && (
-            <div className="demo-access-box">
-              <div className="demo-box-header">
-                <span className="demo-header-label">
-                  ⚡ INSTANT DEMO ACCESS (CLICK TO FILL)
-                </span>
-                <span className="evaluator-tag">Evaluator Fast-Track</span>
-              </div>
-
-              <div className="demo-grid-3x2">
-                {demoAccounts.map((acc, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className={`demo-card-item ${email === acc.email ? 'active-demo' : ''}`}
-                    onClick={() => handleSelectDemo(acc)}
-                  >
-                    <div className="demo-card-top">
-                      <span className="demo-role-badge" style={{ color: acc.color, backgroundColor: acc.tagColor }}>
-                        {acc.roleName}
-                      </span>
-                      <ArrowRight size={13} className="demo-arrow" />
-                    </div>
-                    <div className="demo-name">{acc.displayName}</div>
-                    <div className="demo-sub">{acc.subtitle}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
           {error && (
             <div className="login-error-alert" role="alert">
@@ -290,7 +188,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="forgot-link-btn"
-                  onClick={() => alert('For competition demo access, all demo passwords are: Password123!')}
+                  onClick={() => alert('For competition access, demo passwords are: Password123!')}
                 >
                   Forgot credentials?
                 </button>
@@ -325,7 +223,7 @@ export default function LoginPage() {
                 />
                 <span>Remember this workstation for 30 days</span>
               </label>
-              <a href="#help" onClick={(e) => { e.preventDefault(); alert('Please contact BIIT Helpdesk or use demo credentials.'); }} className="registrar-help">
+              <a href="#help" onClick={(e) => { e.preventDefault(); alert('Please contact BIIT Helpdesk or student administration.'); }} className="registrar-help">
                 Need registrar help?
               </a>
             </div>
