@@ -9,7 +9,7 @@ export default function Layout() {
 
   return (
     <div className="cc-app-wrapper">
-      {/* Sidebar (Desktop fixed 260px; Mobile slide-over drawer) */}
+      {/* Sidebar (Desktop 260px fixed; Mobile slide-over drawer) */}
       <Sidebar
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
@@ -17,7 +17,7 @@ export default function Layout() {
 
       {/* Main Container */}
       <div className="cc-main-container">
-        {/* Top Header wrapped in navbar class for starter test compatibility (mobile only) */}
+        {/* Top Header wrapped in navbar class for starter test compatibility */}
         <div className="navbar cc-top-header-wrapper" style={{ padding: 0, margin: 0, border: 'none', height: 'auto', background: 'transparent' }}>
           <Header onToggleMobileNav={() => setIsMobileNavOpen((prev) => !prev)} />
           <span style={{ display: 'none' }}>CampusConnect &bull; Competition Starter</span>
@@ -29,7 +29,7 @@ export default function Layout() {
         </main>
       </div>
 
-      {/* Fixed Mobile Bottom Nav (< 1024px) */}
+      {/* Fixed Mobile Bottom Nav */}
       <BottomNav />
     </div>
   );

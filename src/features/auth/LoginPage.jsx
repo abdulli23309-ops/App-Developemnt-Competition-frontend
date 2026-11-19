@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/AuthPages.css';
 import {
   ShieldCheck,
-  Building2,
   Lock,
   Mail,
   ArrowRight,
@@ -11,12 +10,23 @@ import {
   EyeOff,
   CheckCircle2,
   AlertCircle,
-  HelpCircle
+  HelpCircle,
+  Sparkles,
+  GraduationCap,
+  BookOpen,
+  Server,
+  Zap,
+  Clock,
+  Compass,
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { useToast } from '../../components/ui/ToastContext';
+import Modal from '../../components/ui/Modal';
+import Button from '../../components/ui/Button';
 
 export default function LoginPage() {
-  const { login, isAuthenticated, user } = useAuth();
+  const { login, demoLogin, isAuthenticated, user } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -26,13 +36,17 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Modals for credentials reminder & registrar assistance
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'Student') {
-        navigate('/student/dashboard');
+        navigate('/student/dashboard', { replace: true });
       } else {
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true });
       }
     }
   }, [isAuthenticated, user, navigate]);
@@ -40,16 +54,18 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!email.trim() || !password) {
-      setError('Please provide email and password.');
+      setError('Please provide university email and password.');
       return;
     }
 
     setSubmitting(true);
     setError('');
-    const res = await login(email.trim(), password, rememberMe);
+
+    const res = await login(email.trim(), password);
     setSubmitting(false);
 
     if (res.success) {
+      toast.success(`Welcome back, ${res.user?.fullName || res.user?.name || 'User'}!`);
       if (res.user?.role === 'Student') {
         navigate('/student/dashboard');
       } else {
@@ -57,6 +73,29 @@ export default function LoginPage() {
       }
     } else {
       setError(res.message);
+      toast.error(res.message, 'Authentication Failed');
+    }
+  };
+
+  const handleQuickDemoLogin = async (demoEmail, roleLabel) => {
+    setEmail(demoEmail);
+    setPassword('Password123!');
+    setSubmitting(true);
+    setError('');
+
+    const res = await demoLogin(demoEmail);
+    setSubmitting(false);
+
+    if (res.success) {
+      toast.success(`Signed in as ${roleLabel} (${res.user?.fullName || res.user?.name})`);
+      if (res.user?.role === 'Student') {
+        navigate('/student/dashboard');
+      } else {
+        navigate('/admin/dashboard');
+      }
+    } else {
+      setError(res.message);
+      toast.error(res.message);
     }
   };
 
@@ -64,93 +103,134 @@ export default function LoginPage() {
     <div className="login-split-page">
       <div className="login-split-container">
         
-        {/* LEFT PANEL - BRANDING */}
+        {/* LEFT PANEL - CLEAN INSTITUTIONAL PRESENTATION */}
         <div className="login-brand-panel">
           <div className="brand-header-area">
             <div className="brand-logo-lockup">
               <div className="brand-logo-icon">
-                <ShieldCheck size={26} strokeWidth={2.5} />
+                <ShieldCheck size={26} strokeWidth={2.4} />
               </div>
               <div className="brand-title-column">
                 <span className="brand-app-title">CampusConnect</span>
-                <span className="brand-sub-badge">INSTITUTIONAL DISPUTE SYSTEM</span>
+                <span className="brand-portal-subtitle">BIIT Student &amp; Administration Portal</span>
               </div>
-            </div>
-            <div className="competition-pill">
-              <span className="live-dot" />
-              <span>BIIT Dev Competition 2026</span>
             </div>
           </div>
 
           <div className="brand-hero-content">
-            <span className="hero-category-tag">OPERATIONAL GOVERNANCE PORTAL</span>
             <h1 className="hero-main-title">
               Your Campus.<br />
-              Your Voice.<br />
-              Your Connect.
+              Your Voice.
             </h1>
             <p className="hero-lead-text">
-              A centralized grievance resolution &amp; campus operations ecosystem connecting students, departmental technicians, and university governance.
+              A central platform to submit complaints, track progress and connect with the right university department.
             </p>
 
-            <div className="feature-cards-column">
-              <div className="hero-feature-card">
-                <div className="feature-card-icon">
-                  <CheckCircle2 size={18} />
+            <div className="benefit-points-list">
+              <div className="benefit-point-item">
+                <div className="benefit-point-icon">
+                  <Compass size={18} strokeWidth={2.2} />
                 </div>
-                <div>
-                  <h4>94.8% SLA Resolution Rate</h4>
-                  <p>Across IT, Cafeteria, Labs, and Library faculties.</p>
-                </div>
-              </div>
-
-              <div className="hero-feature-card">
-                <div className="feature-card-icon">
-                  <ShieldCheck size={18} />
-                </div>
-                <div>
-                  <h4>Whistleblower-Grade Anonymity</h4>
-                  <p>100% blind grievance submission with cryptographic tracking IDs.</p>
+                <div className="benefit-point-text">
+                  <span className="benefit-point-title">Easy Complaint Submission</span>
+                  <span className="benefit-point-desc">Report campus issues through a simple, guided process.</span>
                 </div>
               </div>
 
-              <div className="hero-feature-card">
-                <div className="feature-card-icon">
-                  <Building2 size={18} />
+              <div className="benefit-point-item">
+                <div className="benefit-point-icon">
+                  <Clock size={18} strokeWidth={2.2} />
                 </div>
-                <div>
-                  <h4>Omnichannel Escalation Matrix</h4>
-                  <p>Instant routing to department deans upon 48-hour inactivity.</p>
+                <div className="benefit-point-text">
+                  <span className="benefit-point-title">Transparent Tracking</span>
+                  <span className="benefit-point-desc">Follow complaint progress and receive departmental updates.</span>
                 </div>
               </div>
-            </div>
 
-            <div className="live-resolution-ticker">
-              <span className="ticker-dot" />
-              <span>Latest Resolution: <strong>Lab 3 GPU Cluster restored</strong> &bull; 38m ago</span>
+              <div className="benefit-point-item">
+                <div className="benefit-point-icon">
+                  <CheckCircle2 size={18} strokeWidth={2.2} />
+                </div>
+                <div className="benefit-point-text">
+                  <span className="benefit-point-title">Accountable Resolution</span>
+                  <span className="benefit-point-desc">Departments can review, respond and resolve reported issues.</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="brand-footer-row">
-            <span>&copy; BIIT Software Engineering Society</span>
-            <span className="encrypted-badge">
-              <Lock size={12} /> SSO &amp; 256-bit Encrypted Portal
-            </span>
+          <div className="brand-footer-editorial">
+            <span className="brand-institution-name">Barani Institute of Information Technology</span>
+            <span className="brand-society-credit">BIIT Software Engineering Society &bull; 2026</span>
           </div>
         </div>
 
-        {/* RIGHT PANEL - LOGIN */}
+        {/* RIGHT PANEL - LOGIN & EVALUATOR DEMO ACCESS */}
         <div className="login-form-panel">
           <div className="form-header-badge">
             <span className="portal-badge">
-              <ShieldCheck size={14} /> Student &amp; Faculty Portal
+              <ShieldCheck size={14} /> Official Portal Login
             </span>
           </div>
 
           <h2 className="login-title">Sign in to CampusConnect</h2>
           <p className="login-subtitle">
-            Enter your official university credentials below to access the institutional grievance system.
+            Enter your university credentials below to access your grievance dashboard.
           </p>
+
+          {/* Quick Demo Access Bar for Evaluators */}
+          <div className="quick-demo-wrapper">
+            <div className="quick-demo-header">
+              <Zap size={14} className="quick-demo-icon" />
+              <span>Instant Evaluator Access (1-Click)</span>
+            </div>
+            <div className="quick-demo-grid">
+              <button
+                type="button"
+                className="quick-demo-pill"
+                onClick={() => handleQuickDemoLogin('s.chen@student.biit.edu.pk', 'Student')}
+                disabled={submitting}
+                title="Log in as Student Sarah Chen"
+              >
+                <GraduationCap size={15} />
+                <span>Student</span>
+                <small>Sarah Chen</small>
+              </button>
+              <button
+                type="button"
+                className="quick-demo-pill"
+                onClick={() => handleQuickDemoLogin('itlabs.admin@biit.edu.pk', 'IT Admin')}
+                disabled={submitting}
+                title="Log in as IT Labs Administrator"
+              >
+                <Server size={15} />
+                <span>IT Dept</span>
+                <small>Lab Admin</small>
+              </button>
+              <button
+                type="button"
+                className="quick-demo-pill"
+                onClick={() => handleQuickDemoLogin('library.admin@biit.edu.pk', 'Library Admin')}
+                disabled={submitting}
+                title="Log in as Library Administrator"
+              >
+                <BookOpen size={15} />
+                <span>Library</span>
+                <small>Dr. Zahra</small>
+              </button>
+              <button
+                type="button"
+                className="quick-demo-pill"
+                onClick={() => handleQuickDemoLogin('superadmin@biit.edu.pk', 'SuperAdmin')}
+                disabled={submitting}
+                title="Log in as Campus Super Administrator"
+              >
+                <Sparkles size={15} />
+                <span>SuperAdmin</span>
+                <small>Executive</small>
+              </button>
+            </div>
+          </div>
 
           {error && (
             <div className="login-error-alert" role="alert">
@@ -163,32 +243,37 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="login-form-element">
             <div className="form-group-custom">
               <div className="label-row">
-                <label htmlFor="login-email">University Email or Student ID</label>
-                <span className="label-hint">e.g. s.chen@student.biit.edu.pk</span>
+                <label htmlFor="login-email">
+                  University Email Address <span className="label-required-star">*</span>
+                </label>
+                <span className="label-hint">Institutional ID</span>
               </div>
               <div className="input-with-icon">
                 <Mail size={17} className="input-icon" />
                 <input
                   id="login-email"
-                  type="text"
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="s.chen@student.biit.edu.pk"
+                  placeholder="e.g. s.chen@student.biit.edu.pk"
+                  autoComplete="username"
                   required
                 />
               </div>
               <span className="field-subnote">
-                <HelpCircle size={12} /> Use your official institutional address (<code>@student.biit.edu.pk</code> or <code>@biit.edu.pk</code>)
+                <HelpCircle size={12} /> Use your official university account address
               </span>
             </div>
 
             <div className="form-group-custom">
               <div className="label-row">
-                <label htmlFor="login-password">Access Password</label>
+                <label htmlFor="login-password">
+                  Account Password <span className="label-required-star">*</span>
+                </label>
                 <button
                   type="button"
                   className="forgot-link-btn"
-                  onClick={() => alert('For competition access, demo passwords are: Password123!')}
+                  onClick={() => setShowForgotModal(true)}
                 >
                   Forgot credentials?
                 </button>
@@ -200,7 +285,8 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
                   required
                 />
                 <button
@@ -208,6 +294,7 @@ export default function LoginPage() {
                   className="password-toggle-btn"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={0}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -223,42 +310,94 @@ export default function LoginPage() {
                 />
                 <span>Remember this workstation for 30 days</span>
               </label>
-              <a href="#help" onClick={(e) => { e.preventDefault(); alert('Please contact BIIT Helpdesk or student administration.'); }} className="registrar-help">
-                Need registrar help?
-              </a>
+              <button
+                type="button"
+                onClick={() => setShowHelpModal(true)}
+                className="registrar-help"
+              >
+                Need help signing in?
+              </button>
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="login-submit-button"
-              disabled={submitting}
+              variant="primary"
+              size="lg"
+              fullWidth
+              isLoading={submitting}
+              iconRight={ArrowRight}
             >
-              {submitting ? 'Authenticating...' : 'Sign In to Portal'}
-              <ArrowRight size={17} />
-            </button>
+              Sign In to Portal
+            </Button>
           </form>
 
           <div className="login-register-prompt">
-            New student or faculty member at BIIT?{' '}
+            New student member at BIIT?{' '}
             <Link to="/register" className="register-strong-link">
               Register Student Account
             </Link>
           </div>
 
           <div className="login-mini-footer">
-            <a href="#privacy">Privacy Policy</a>
+            <a href="#help" onClick={(e) => { e.preventDefault(); setShowHelpModal(true); }}>Registrar Helpdesk</a>
             <span>&bull;</span>
-            <a href="#terms">Acceptable Use Policy</a>
-            <span>&bull;</span>
-            <a href="#sla">Campus Resolution SLA</a>
+            <Link to="/system-status">System Telemetry</Link>
           </div>
         </div>
 
       </div>
 
       <div className="login-page-copyright">
-        &copy; 2026 CampusConnect Dispute Resolution System. Institutional Oversight &amp; Compliance Portal.
+        Barani Institute of Information Technology &bull; BIIT Software Engineering Society &bull; 2026
       </div>
+
+      {/* Forgot Credentials Modal */}
+      <Modal
+        isOpen={showForgotModal}
+        onClose={() => setShowForgotModal(false)}
+        title="Evaluator & Demo Credentials"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem', color: '#334155' }}>
+          <p>
+            For competition evaluation and grading, all pre-configured demo accounts share the password:
+          </p>
+          <div style={{ background: '#F1F5F9', padding: '0.75rem', borderRadius: '8px', fontFamily: 'monospace', fontWeight: 700, color: '#1E1B4B' }}>
+            Password123!
+          </div>
+          <p style={{ marginTop: '0.5rem' }}>
+            Available persona logins:
+          </p>
+          <ul style={{ paddingLeft: '1.25rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <li><strong>Student:</strong> s.chen@student.biit.edu.pk</li>
+            <li><strong>IT Labs Admin:</strong> itlabs.admin@biit.edu.pk</li>
+            <li><strong>Library Admin:</strong> library.admin@biit.edu.pk</li>
+            <li><strong>SuperAdmin:</strong> superadmin@biit.edu.pk</li>
+          </ul>
+        </div>
+      </Modal>
+
+      {/* Help Modal */}
+      <Modal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+        title="CampusConnect Registrar & Support"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem', color: '#334155' }}>
+          <p>
+            For official account onboarding, password resets, or identity verification queries, contact:
+          </p>
+          <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1rem', borderRadius: '8px' }}>
+            <div><strong>BIIT Helpdesk:</strong> Room 204, Academic Block A</div>
+            <div><strong>Direct Extension:</strong> +92 51 929-2144 (Ext 108)</div>
+            <div><strong>Email:</strong> support@student.biit.edu.pk</div>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: '#64748B' }}>
+            Hours: Monday &ndash; Friday, 08:30 AM &ndash; 04:30 PM PKT.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 }
+
+export { LoginPage };

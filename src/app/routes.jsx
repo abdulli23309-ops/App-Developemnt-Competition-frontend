@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import AccessDeniedPage from '../pages/AccessDeniedPage';
 import SystemStatusPage from '../pages/SystemStatusPage';
+import ProfilePage from '../pages/ProfilePage';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
 import StudentDashboard from '../features/complaints/StudentDashboard';
@@ -52,6 +53,36 @@ function RoleAnalyticsRoute() {
   return <Navigate to="/" replace />;
 }
 
+// Route Guard for System Status: Admin / SuperAdmin only
+function RoleSystemStatusRoute() {
+  const { user, isSuperAdmin, isDeptAdmin, isStudent, isLoading } = useAuth();
+  if (isLoading) return null;
+  const roleLower = String(user?.role || '').toLowerCase();
+  const isAuthorized = Boolean(
+    isSuperAdmin ||
+    roleLower === 'superadmin' ||
+    roleLower === 'super_admin' ||
+    roleLower === 'admin'
+  );
+  if (!isAuthorized) {
+    if (isStudent) return <Navigate to="/student/dashboard" replace />;
+    if (isDeptAdmin) return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/" replace />;
+  }
+  return <SystemStatusPage />;
+}
+
+// Route Guard for Grievance Submission: Eligible Students only
+function RoleSubmitComplaintRoute() {
+  const { isStudent, isDeptAdmin, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (!isStudent) {
+    if (isDeptAdmin) return <Navigate to="/admin/complaints" replace />;
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+  return <SubmitComplaintPage />;
+}
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -65,7 +96,7 @@ export default function AppRoutes() {
 
         {/* Student Specific Routes */}
         <Route path="student/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-        <Route path="student/new" element={<ProtectedRoute><SubmitComplaintPage /></ProtectedRoute>} />
+        <Route path="student/new" element={<ProtectedRoute><RoleSubmitComplaintRoute /></ProtectedRoute>} />
         <Route path="student/complaints" element={<ProtectedRoute><MyComplaintsPage /></ProtectedRoute>} />
 
         {/* Admin Specific Routes */}
@@ -75,13 +106,13 @@ export default function AppRoutes() {
 
         {/* Unified Grievance Routes */}
         <Route path="complaints" element={<ProtectedRoute><UnifiedComplaintsRoute /></ProtectedRoute>} />
-        <Route path="complaints/new" element={<ProtectedRoute><SubmitComplaintPage /></ProtectedRoute>} />
+        <Route path="complaints/new" element={<ProtectedRoute><RoleSubmitComplaintRoute /></ProtectedRoute>} />
         <Route path="complaints/:id" element={<ProtectedRoute><ComplaintDetailsPage /></ProtectedRoute>} />
         <Route path="analytics" element={<ProtectedRoute><RoleAnalyticsRoute /></ProtectedRoute>} />
         <Route path="notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
         <Route path="alerts" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-        <Route path="system-status" element={<ProtectedRoute><SystemStatusPage /></ProtectedRoute>} />
-        <Route path="profile" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="system-status" element={<ProtectedRoute><RoleSystemStatusRoute /></ProtectedRoute>} />
+        <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="403" element={<AccessDeniedPage />} />
       </Route>
 

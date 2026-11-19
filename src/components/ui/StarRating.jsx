@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 
 export default function StarRating({
@@ -10,6 +10,10 @@ export default function StarRating({
 }) {
   const [hoverRating, setHoverRating] = useState(0);
   const [currentRating, setCurrentRating] = useState(initialRating || 0);
+
+  useEffect(() => {
+    setCurrentRating(initialRating || 0);
+  }, [initialRating]);
 
   const handleClick = (starValue) => {
     if (readOnly) return;
@@ -38,7 +42,7 @@ export default function StarRating({
             cursor: readOnly ? 'default' : 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
-            color: star <= activeValue ? '#F59E0B' : '#E2E8F0',
+            color: star <= activeValue ? '#F59E0B' : '#CBD5E1',
             transition: 'color 0.15s ease, transform 0.15s ease',
           }}
           title={readOnly ? `${currentRating} of 5 stars` : `Rate ${star} star${star > 1 ? 's' : ''}`}
@@ -51,7 +55,7 @@ export default function StarRating({
         </button>
       ))}
       {showLabel && currentRating > 0 && (
-        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#D97706', marginLeft: '4px' }}>
+        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#B45309', marginLeft: '6px' }}>
           {currentRating}.0 / 5.0
         </span>
       )}

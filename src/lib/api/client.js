@@ -1,30 +1,44 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+// Normalize API base URL so /api is present exactly once
+let rawBase = (import.meta.env.VITE_API_BASE_URL || '').trim();
+rawBase = rawBase.replace(/\/+$/, '');
 
-if (!API_BASE_URL && typeof window !== 'undefined') {
+// Ensure /api suffix exists on baseURL exactly once if a host/URL is provided
+let normalizedBaseUrl = rawBase;
+if (normalizedBaseUrl && !normalizedBaseUrl.endsWith('/api')) {
+  normalizedBaseUrl = `${normalizedBaseUrl}/api`;
+}
+
+if (!normalizedBaseUrl && typeof window !== 'undefined') {
   console.info(
-    'VITE_API_BASE_URL is not set. API requests will be dispatched relative to current host.',
+    'VITE_API_BASE_URL is not set. API requests will be dispatched relative to current host with /api prefix.',
   );
+  normalizedBaseUrl = '/api';
 }
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: normalizedBaseUrl,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Attach a request timestamp header and optional Bearer token if present
+// Interceptor: Attach timestamp header, Bearer token, and prevent double /api/api prefix
 api.interceptors.request.use((config) => {
   config.headers['X-Request-Time'] = new Date().toISOString();
-  
+
+  // Strip duplicate /api if both baseURL ends with /api and config.url starts with /api
+  if (config.url && config.baseURL?.endsWith('/api') && config.url.startsWith('/api/')) {
+    config.url = config.url.replace(/^\/api/, '');
+  }
+
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
   return config;
 });
 
@@ -37,7 +51,7 @@ api.interceptors.response.use(
         `API error ${error.response.status} ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
       );
 
-      // Section 10: Centralized 403 Forbidden handler
+      // Centralized 403 Forbidden handler
       if (error.response.status === 403 && typeof window !== 'undefined') {
         const currentPath = window.location.pathname;
         if (currentPath !== '/403') {
@@ -49,7 +63,9 @@ api.interceptors.response.use(
             attemptedPath: currentPath,
             attemptedUrl: error.config?.url,
             attemptedComplaintId,
-            errorMessage: error.response.data?.message || 'Access Denied: You do not have permission to access this resource.',
+            errorMessage:
+              error.response.data?.message ||
+              'Access Denied: You do not have permission to access this resource.',
             timestamp: new Date().toISOString(),
           };
 

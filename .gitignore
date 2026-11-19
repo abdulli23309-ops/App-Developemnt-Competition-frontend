@@ -26,3 +26,9 @@ dist-ssr
 # Environment files
 .env
 .env.local
+
+# Test automation and local QA artifacts
+browser-qa-suite.js
+test-auth-experience.js
+qa-screenshots/
+*.png
